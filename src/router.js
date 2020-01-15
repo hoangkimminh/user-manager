@@ -1,5 +1,9 @@
 const { ObjectID } = require('mongodb')
 const nanoid = require('nanoid/async')
+const {
+  createUserReqSchema,
+  updateLinkedAccountIDReqSchema
+} = require('./schemas/routes')
 
 module.exports = (server, opts, next) => {
   const { mongol } = opts
@@ -15,7 +19,7 @@ module.exports = (server, opts, next) => {
     }
   })
 
-  server.post('/', async (req,res) => {
+  server.post('/', { schema: createUserReqSchema }, async (req, res) => {
     const { username, name, avatar, email, birthday, linkedAccounts } = req.body
     try {
       const now = new Date()
@@ -33,7 +37,7 @@ module.exports = (server, opts, next) => {
         createdAt: now,
         updatedAt: now
       })
-      res.status(200).send({ _id: insertedId})
+      res.status(200).send({ _id: insertedId })
     } catch (err) {
       server.log.error(err.message)
       res.status(500).send()
@@ -55,7 +59,7 @@ module.exports = (server, opts, next) => {
     const { service, id } = req.params
     try {
       const user = await userCollection.findOne({
-        ['linkedAccounts.' + service] : id
+        ['linkedAccounts.' + service]: id
       })
       res.status(200).send(user)
     } catch (err) {
@@ -64,39 +68,30 @@ module.exports = (server, opts, next) => {
     }
   })
 
-  server.put('/linkedAccounts/:service/:id/:newID', async (req, res) => {
-    const { service, id, newID } = req.params
-    try {
-      await userCollection.updateOne(
-        {
-          ['linkedAccounts.' + service] : id
-        },
-        {
-          $set: {
-            ['linkedAccounts.' + service]: newID
+  server.put(
+    '/linkedAccounts/:service/:id/:newID',
+    { schema: updateLinkedAccountIDReqSchema },
+    async (req, res) => {
+      const { service, id, newID } = req.params
+      try {
+        await userCollection.updateOne(
+          {
+            ['linkedAccounts.' + service]: id
           },
-          $currentDate: { updatedAt: true}
-        }
-      )
-      res.status(204)
-    } catch (err) {
-      server.log.error(err.message)
-      res.status(500).send()
+          {
+            $set: {
+              ['linkedAccounts.' + service]: newID
+            },
+            $currentDate: { updatedAt: true }
+          }
+        )
+        res.status(204)
+      } catch (err) {
+        server.log.error(err.message)
+        res.status(500).send()
+      }
     }
-  })
-
-  server.get('/users/linkedAccounts/:service/:id', async (req, res) => {
-    const { service, id } = req.params
-    const query = {
-      ["linkedAccounts." + service] : id
-    }
-    try {
-      const user = await userCollection.findOne(query)
-      res.code(200).send(user)
-    } catch (err) {
-      res.code(500)
-    }
-  })
+  )
 
   next()
 }

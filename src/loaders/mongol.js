@@ -1,5 +1,5 @@
 const { Mongol } = require('@albert-team/mongol')
-const { userSchema } = require('../models/user')
+const { userSchema } = require('../schemas/models/user')
 
 const { MONGODB_URI, MONGODB_DB_NAME } = process.env
 

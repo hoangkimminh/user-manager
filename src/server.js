@@ -8,7 +8,7 @@ const server = fastify({ ignoreTrailingSlash: true, logger: { level: loggerLevel
 const main = async () => {
   try {
     const mongol = await mongolLoader()
-    server.register(rootRouter, {mongol})
+    server.register(rootRouter, { mongol })
     await server.listen(process.env.PORT, '::') // listen to all IPv6 and IPv4 addresses
   } catch (err) {
     server.log.error(err.message)

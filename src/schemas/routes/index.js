@@ -31,7 +31,7 @@ const body = {
       properties: {
         facebook: {
           type: 'string',
-          minLength: 16,
+          minLength: 15,
           maxLength: 16
         }
       }

@@ -41,7 +41,7 @@ const linkedAccountsSchema = {
   properties: {
     facebook: {
       bsonType: 'string',
-      minLength: 16,
+      minLength: 15,
       maxLength: 16,
       description: 'Facebook app-scoped ID'
     },

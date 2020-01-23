@@ -1,6 +1,6 @@
 const body = {
   type: 'object',
-  required: ['username', 'name', 'avatar', 'email', 'linkedAccounts'],
+  required: ['name', 'avatar', 'email', 'linkedAccounts'],
   properties: {
     username: {
       type: 'string',

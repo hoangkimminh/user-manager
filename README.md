@@ -80,4 +80,4 @@ See [User schema][0].
 - `id` (string): Old ID
 - `newID` (string): New ID
 
-[0]: https://github.com/night-watch-project/user-manager/blob/master/src/models/user.js
+[0]: https://github.com/night-watch-project/user-manager/blob/master/src/schemas/models/user.js

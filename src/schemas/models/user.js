@@ -1,10 +1,12 @@
 const _idSchema = {
   bsonType: 'objectId',
+  type: 'string',
   description: 'ID of the user'
 }
 
 const usernameSchema = {
   bsonType: ['string', 'null'],
+  type: ['string', 'null'],
   minLength: 6,
   maxLength: 24,
   pattern: '^[A-Za-z0-9]+$',
@@ -13,6 +15,7 @@ const usernameSchema = {
 
 const nameSchema = {
   bsonType: 'string',
+  type: 'string',
   minLength: 6,
   maxLength: 48,
   description: "User's full name"
@@ -20,11 +23,15 @@ const nameSchema = {
 
 const avatarSchema = {
   bsonType: 'string',
+  type: 'string',
+  format: 'uri',
   description: "User's avatar URL"
 }
 
 const emailSchema = {
   bsonType: 'string',
+  type: 'string',
+  format: 'email',
   minLength: 6,
   maxLength: 256,
   description: "User's email"
@@ -32,21 +39,26 @@ const emailSchema = {
 
 const birthdaySchema = {
   bsonType: ['date', 'null'],
+  type: ['string', 'null'],
+  format: 'date',
   description: "User's birthday"
 }
 
 const linkedAccountsSchema = {
   bsonType: 'object',
+  type: 'object',
   required: ['facebook', 'messenger'],
   properties: {
     facebook: {
       bsonType: 'string',
+      type: 'string',
       minLength: 15,
       maxLength: 16,
       description: 'Facebook app-scoped ID'
     },
     messenger: {
       bsonType: 'string',
+      type: 'string',
       minLength: 16,
       maxLength: 21,
       description: 'Facebook page-scoped ID for Messenger'
@@ -96,4 +108,12 @@ const userSchema = {
   }
 }
 
-module.exports = { userSchema }
+module.exports = {
+  userSchema,
+  usernameSchema,
+  nameSchema,
+  avatarSchema,
+  emailSchema,
+  birthdaySchema,
+  linkedAccountsSchema
+}

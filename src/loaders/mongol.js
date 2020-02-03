@@ -7,6 +7,9 @@ const mongol = new Mongol(MONGODB_URI, MONGODB_DB_NAME)
 
 module.exports = async () => {
   await mongol.connect()
-  await mongol.setSchema('users', userSchema)
+  await mongol.setSchema('users', userSchema, {
+    ignoreUnsupportedKeywords: true,
+    ignoreType: true
+  })
   return mongol
 }

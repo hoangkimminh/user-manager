@@ -2,7 +2,9 @@ const { ObjectID } = require('mongodb')
 const nanoid = require('nanoid/async')
 const {
   createUserReqSchema,
-  updateLinkedAccountIDReqSchema
+  updateLinkedAccountIDReqSchema,
+  getUserByIDReqSchema,
+  getUserByLinkedAccountIDReqSchema
 } = require('./schemas/routes')
 
 module.exports = (server, opts, next) => {
@@ -44,7 +46,7 @@ module.exports = (server, opts, next) => {
     }
   })
 
-  server.get('/:id', async (req, res) => {
+  server.get('/:id', { schema: getUserByIDReqSchema }, async (req, res) => {
     const _id = new ObjectID(req.params.id)
     try {
       let result = await userCollection.findOne({ _id })
@@ -55,18 +57,22 @@ module.exports = (server, opts, next) => {
     }
   })
 
-  server.get('/linkedAccounts/:service/:id', async (req, res) => {
-    const { service, id } = req.params
-    try {
-      const user = await userCollection.findOne({
-        ['linkedAccounts.' + service]: id
-      })
-      res.status(200).send(user)
-    } catch (err) {
-      server.log.error(err.message)
-      res.status(500).send()
+  server.get(
+    '/linkedAccounts/:service/:id',
+    { schema: getUserByLinkedAccountIDReqSchema },
+    async (req, res) => {
+      const { service, id } = req.params
+      try {
+        const user = await userCollection.findOne({
+          ['linkedAccounts.' + service]: id
+        })
+        res.status(200).send(user)
+      } catch (err) {
+        server.log.error(err.message)
+        res.status(500).send()
+      }
     }
-  })
+  )
 
   server.put(
     '/linkedAccounts/:service/:id/:newID',

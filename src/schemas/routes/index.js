@@ -1,4 +1,5 @@
 const {
+  _idSchema,
   usernameSchema,
   nameSchema,
   avatarSchema,
@@ -26,6 +27,33 @@ const createUserReqSchema = {
   }
 }
 
+const getUserByIDReqSchema = {
+  params: {
+    type: 'object',
+    required: ['id'],
+    properties: {
+      id: _idSchema
+    }
+  }
+}
+
+const getUserByLinkedAccountIDReqSchema = {
+  params: {
+    type: 'object',
+    required: ['service', 'id'],
+    properties: {
+      service: {
+        enum: Object.keys(linkedAccountsSchema.properties)
+      },
+      id: {
+        type: 'string',
+        minLength: 15,
+        maxLength: 21
+      }
+    }
+  }
+}
+
 const updateLinkedAccountIDReqSchema = {
   params: {
     type: 'object',
@@ -36,16 +64,21 @@ const updateLinkedAccountIDReqSchema = {
       },
       id: {
         type: 'string',
-        minLength: 16,
+        minLength: 15,
         maxLength: 21
       },
       newID: {
         type: 'string',
-        minLength: 16,
+        minLength: 15,
         maxLength: 21
       }
     }
   }
 }
 
-module.exports = { createUserReqSchema, updateLinkedAccountIDReqSchema }
+module.exports = {
+  createUserReqSchema,
+  updateLinkedAccountIDReqSchema,
+  getUserByIDReqSchema,
+  getUserByLinkedAccountIDReqSchema
+}

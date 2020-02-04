@@ -1,6 +1,8 @@
 const _idSchema = {
   bsonType: 'objectId',
   type: 'string',
+  minLength: 24,
+  maxLength: 24,
   description: 'ID of the user'
 }
 
@@ -110,6 +112,7 @@ const userSchema = {
 
 module.exports = {
   userSchema,
+  _idSchema,
   usernameSchema,
   nameSchema,
   avatarSchema,

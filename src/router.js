@@ -7,7 +7,7 @@ const {
   getUserByLinkedAccountIDReqSchema
 } = require('./schemas/routes')
 
-module.exports = (server, opts, next) => {
+module.exports = async (server, opts) => {
   const { mongol } = opts
   const userCollection = mongol.database.collection('users')
 
@@ -98,6 +98,4 @@ module.exports = (server, opts, next) => {
       }
     }
   )
-
-  next()
 }

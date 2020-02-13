@@ -1,17 +1,18 @@
 const { ObjectID } = require('mongodb')
 const nanoid = require('nanoid/async')
 const {
-  createUserReqSchema,
-  updateLinkedAccountIDReqSchema,
-  getUserByIDReqSchema,
-  getUserByLinkedAccountIDReqSchema
+  getAllUsersSchema,
+  createUserSchema,
+  updateLinkedAccountIDSchema,
+  getUserByIDSchema,
+  getUserByLinkedAccountIDSchema
 } = require('./schemas/routes')
 
 module.exports = async (server, opts) => {
   const { mongol } = opts
   const userCollection = mongol.database.collection('users')
 
-  server.get('/', async (req, res) => {
+  server.get('/', { schema: getAllUsersSchema }, async (req, res) => {
     try {
       let result = await userCollection.find({}).toArray()
       res.status(200).send(result)
@@ -21,7 +22,7 @@ module.exports = async (server, opts) => {
     }
   })
 
-  server.post('/', { schema: createUserReqSchema }, async (req, res) => {
+  server.post('/', { schema: createUserSchema }, async (req, res) => {
     const { username, name, avatar, email, birthday, linkedAccounts } = req.body
     try {
       const now = new Date()
@@ -46,7 +47,7 @@ module.exports = async (server, opts) => {
     }
   })
 
-  server.get('/:id', { schema: getUserByIDReqSchema }, async (req, res) => {
+  server.get('/:id', { schema: getUserByIDSchema }, async (req, res) => {
     const _id = new ObjectID(req.params.id)
     try {
       let result = await userCollection.findOne({ _id })
@@ -59,7 +60,7 @@ module.exports = async (server, opts) => {
 
   server.get(
     '/linkedAccounts/:service/:id',
-    { schema: getUserByLinkedAccountIDReqSchema },
+    { schema: getUserByLinkedAccountIDSchema },
     async (req, res) => {
       const { service, id } = req.params
       try {
@@ -76,7 +77,7 @@ module.exports = async (server, opts) => {
 
   server.put(
     '/linkedAccounts/:service/:id/:newID',
-    { schema: updateLinkedAccountIDReqSchema },
+    { schema: updateLinkedAccountIDSchema },
     async (req, res) => {
       const { service, id, newID } = req.params
       try {

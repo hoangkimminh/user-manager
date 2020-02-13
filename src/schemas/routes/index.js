@@ -1,4 +1,5 @@
 const {
+  userSchema,
   _idSchema,
   usernameSchema,
   nameSchema,
@@ -8,7 +9,16 @@ const {
   linkedAccountsSchema
 } = require('../models/user')
 
-const createUserReqSchema = {
+const getAllUsersSchema = {
+  response: {
+    200: {
+      type: 'array',
+      items: userSchema
+    }
+  }
+}
+
+const createUserSchema = {
   body: {
     type: 'object',
     required: ['name', 'avatar', 'email', 'linkedAccounts'],
@@ -24,20 +34,31 @@ const createUserReqSchema = {
         properties: linkedAccountsSchema.properties
       }
     }
+  },
+  response: {
+    200: {
+      type: 'object',
+      properties: {
+        _id: _idSchema
+      }
+    }
   }
 }
 
-const getUserByIDReqSchema = {
+const getUserByIDSchema = {
   params: {
     type: 'object',
     required: ['id'],
     properties: {
       id: _idSchema
     }
+  },
+  response: {
+    200: userSchema
   }
 }
 
-const getUserByLinkedAccountIDReqSchema = {
+const getUserByLinkedAccountIDSchema = {
   params: {
     type: 'object',
     required: ['service', 'id'],
@@ -51,10 +72,13 @@ const getUserByLinkedAccountIDReqSchema = {
         maxLength: 21
       }
     }
+  },
+  response: {
+    200: userSchema
   }
 }
 
-const updateLinkedAccountIDReqSchema = {
+const updateLinkedAccountIDSchema = {
   params: {
     type: 'object',
     required: ['service', 'id', 'newID'],
@@ -77,8 +101,9 @@ const updateLinkedAccountIDReqSchema = {
 }
 
 module.exports = {
-  createUserReqSchema,
-  updateLinkedAccountIDReqSchema,
-  getUserByIDReqSchema,
-  getUserByLinkedAccountIDReqSchema
+  getAllUsersSchema,
+  createUserSchema,
+  updateLinkedAccountIDSchema,
+  getUserByIDSchema,
+  getUserByLinkedAccountIDSchema
 }

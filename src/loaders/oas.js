@@ -13,7 +13,12 @@ module.exports = async (server) => {
       externalDocs: {
         url: 'https://github.com/night-watch-project/user-manager',
         description: 'Github'
-      }
+      },
+      consumes: ['application/json'],
+      produces: ['application/json'],
+      servers: [{
+        url: `http://localhost:${process.env.PORT}`
+      }]
     }
   })
 }

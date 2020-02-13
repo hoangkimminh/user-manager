@@ -70,17 +70,22 @@ const linkedAccountsSchema = {
 }
 
 const privilegeSchema = {
+  type: 'string',
   enum: ['normal'],
   description: "User's privilege"
 }
 
 const createdAtSchema = {
   bsonType: 'date',
+  type: 'string',
+  format: 'date',
   description: 'Time at which the user was created'
 }
 
 const updatedAtSchema = {
   bsonType: 'date',
+  type: 'string',
+  format: 'date',
   description: 'Time at which the data was last updated'
 }
 

@@ -1,5 +1,6 @@
 const { ObjectID } = require('mongodb')
 const nanoid = require('nanoid/async')
+const { createTimestampHook } = require('@albert-team/mongol/builtins/hooks')
 const {
   getAllUsersSchema,
   createUserSchema,
@@ -11,6 +12,10 @@ const {
 module.exports = async (server, opts) => {
   const { mongol } = opts
   const userCollection = mongol.database.collection('users')
+  mongol.attachDatabaseHook(
+    userCollection,
+    createTimestampHook()
+  )
 
   server.get('/', { schema: getAllUsersSchema }, async (req, res) => {
     try {
@@ -25,7 +30,6 @@ module.exports = async (server, opts) => {
   server.post('/', { schema: createUserSchema }, async (req, res) => {
     const { username, name, avatar, email, birthday, linkedAccounts } = req.body
     try {
-      const now = new Date()
       const { insertedId } = await userCollection.insertOne({
         username,
         name,
@@ -37,8 +41,6 @@ module.exports = async (server, opts) => {
           messenger: 'AUTH_' + (await nanoid(16))
         },
         privilege: 'normal',
-        createdAt: now,
-        updatedAt: now
       })
       res.status(200).send({ _id: insertedId })
     } catch (err) {
@@ -88,8 +90,7 @@ module.exports = async (server, opts) => {
           {
             $set: {
               ['linkedAccounts.' + service]: newID
-            },
-            $currentDate: { updatedAt: true }
+            }
           }
         )
         res.status(204)

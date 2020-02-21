@@ -98,8 +98,7 @@ const userSchema = {
     'email',
     'linkedAccounts',
     'privilege',
-    'createdAt',
-    'updatedAt'
+    'createdAt'
   ],
   properties: {
     _id: _idSchema,

@@ -1,7 +1,7 @@
 const { createTimestampHook } = require('@albert-team/mongol/builtins/hooks')
 const nanoid = require('nanoid/async')
 
-class RootController {
+class RootService {
   constructor(mongol) {
     this.userCollection = mongol.database.collection('users')
     mongol.attachDatabaseHook(this.userCollection, createTimestampHook())
@@ -51,4 +51,4 @@ class RootController {
   }
 }
 
-module.exports = { RootController }
+module.exports = { RootService }

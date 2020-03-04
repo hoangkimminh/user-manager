@@ -1,5 +1,3 @@
-const { ObjectID } = require('mongodb')
-
 const {
   getAllUsersSchema,
   createUserSchema,
@@ -7,7 +5,7 @@ const {
   getUserByIDSchema,
   getUserByLinkedAccountIDSchema
 } = require('../schemas/services/root')
-const { RootService } = require('../services/root')
+const RootService = require('../services/root')
 
 module.exports = async (server, opts) => {
   const { mongol } = opts
@@ -24,16 +22,9 @@ module.exports = async (server, opts) => {
   })
 
   server.post('/', { schema: createUserSchema }, async (req, res) => {
-    const { username, name, avatar, email, birthday, linkedAccounts } = req.body
+    const data = req.body
     try {
-      const { insertedId } = await rootService.createUser(
-        username,
-        name,
-        avatar,
-        email,
-        birthday,
-        linkedAccounts
-      )
+      const { insertedId } = await rootService.createUser(data)
       res.status(200).send({ _id: insertedId })
     } catch (err) {
       server.log.error(err.message)
@@ -42,9 +33,9 @@ module.exports = async (server, opts) => {
   })
 
   server.get('/:id', { schema: getUserByIDSchema }, async (req, res) => {
-    const _id = new ObjectID(req.params.id)
+    const { id } = req.params
     try {
-      let result = await rootService.getUserByID(_id)
+      let result = await rootService.getUserByID(id)
       res.status(200).send(result)
     } catch (err) {
       server.log.error(err.message)

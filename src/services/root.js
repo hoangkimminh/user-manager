@@ -1,5 +1,6 @@
 const { createTimestampHook } = require('@albert-team/mongol/builtins/hooks')
 const nanoid = require('nanoid/async')
+const { ObjectID } = require('mongodb')
 
 class RootService {
   constructor(mongol) {
@@ -11,7 +12,8 @@ class RootService {
     return this.userCollection.find({}).toArray()
   }
 
-  createUser(username, name, avatar, email, birthday, linkedAccounts) {
+  createUser(data) {
+    const { username, name, avatar, email, birthday, linkedAccounts } = data
     const { insertedId } = this.userCollection.insertOne({
       username,
       name,
@@ -27,7 +29,8 @@ class RootService {
     return insertedId
   }
 
-  getUserByID(_id) {
+  getUserByID(id) {
+    const _id = new ObjectID(id)
     return this.userCollection.findOne({ _id })
   }
 
@@ -51,4 +54,4 @@ class RootService {
   }
 }
 
-module.exports = { RootService }
+module.exports = RootService

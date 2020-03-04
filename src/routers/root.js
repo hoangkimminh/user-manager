@@ -1,25 +1,21 @@
 const { ObjectID } = require('mongodb')
-const nanoid = require('nanoid/async')
-const { createTimestampHook } = require('@albert-team/mongol/builtins/hooks')
+
 const {
   getAllUsersSchema,
   createUserSchema,
   updateLinkedAccountIDSchema,
   getUserByIDSchema,
   getUserByLinkedAccountIDSchema
-} = require('./schemas/routes')
+} = require('../schemas/services')
+const { RootController } = require('../services/root')
 
 module.exports = async (server, opts) => {
   const { mongol } = opts
-  const userCollection = mongol.database.collection('users')
-  mongol.attachDatabaseHook(
-    userCollection,
-    createTimestampHook()
-  )
+  const rootController = new RootController(mongol)
 
   server.get('/', { schema: getAllUsersSchema }, async (req, res) => {
     try {
-      let result = await userCollection.find({}).toArray()
+      let result = await rootController.getAllUsers()
       res.status(200).send(result)
     } catch (err) {
       server.log.error(err.message)
@@ -30,18 +26,14 @@ module.exports = async (server, opts) => {
   server.post('/', { schema: createUserSchema }, async (req, res) => {
     const { username, name, avatar, email, birthday, linkedAccounts } = req.body
     try {
-      const { insertedId } = await userCollection.insertOne({
+      const { insertedId } = await rootController.createUser(
         username,
         name,
         avatar,
         email,
         birthday,
-        linkedAccounts: {
-          ...linkedAccounts,
-          messenger: 'AUTH_' + (await nanoid(16))
-        },
-        privilege: 'normal',
-      })
+        linkedAccounts
+      )
       res.status(200).send({ _id: insertedId })
     } catch (err) {
       server.log.error(err.message)
@@ -52,7 +44,7 @@ module.exports = async (server, opts) => {
   server.get('/:id', { schema: getUserByIDSchema }, async (req, res) => {
     const _id = new ObjectID(req.params.id)
     try {
-      let result = await userCollection.findOne({ _id })
+      let result = await rootController.getUserByID(_id)
       res.status(200).send(result)
     } catch (err) {
       server.log.error(err.message)
@@ -66,9 +58,7 @@ module.exports = async (server, opts) => {
     async (req, res) => {
       const { service, id } = req.params
       try {
-        const user = await userCollection.findOne({
-          ['linkedAccounts.' + service]: id
-        })
+        const user = await rootController.getUserByLinkedAccountID(service, id)
         res.status(200).send(user)
       } catch (err) {
         server.log.error(err.message)
@@ -83,16 +73,7 @@ module.exports = async (server, opts) => {
     async (req, res) => {
       const { service, id, newID } = req.params
       try {
-        await userCollection.updateOne(
-          {
-            ['linkedAccounts.' + service]: id
-          },
-          {
-            $set: {
-              ['linkedAccounts.' + service]: newID
-            }
-          }
-        )
+        await rootController.updateLinkedAccountID(service, id, newID)
         res.status(204)
       } catch (err) {
         server.log.error(err.message)

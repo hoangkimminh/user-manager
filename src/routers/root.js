@@ -1,25 +1,19 @@
-const { ObjectID } = require('mongodb')
-const nanoid = require('nanoid/async')
-const { createTimestampHook } = require('@albert-team/mongol/builtins/hooks')
 const {
   getAllUsersSchema,
   createUserSchema,
   updateLinkedAccountIDSchema,
   getUserByIDSchema,
   getUserByLinkedAccountIDSchema
-} = require('./schemas/routes')
+} = require('../schemas/services/root')
+const RootService = require('../services/root')
 
 module.exports = async (server, opts) => {
   const { mongol } = opts
-  const userCollection = mongol.database.collection('users')
-  mongol.attachDatabaseHook(
-    userCollection,
-    createTimestampHook()
-  )
+  const rootService = new RootService(mongol)
 
   server.get('/', { schema: getAllUsersSchema }, async (req, res) => {
     try {
-      let result = await userCollection.find({}).toArray()
+      let result = await rootService.getAllUsers()
       res.status(200).send(result)
     } catch (err) {
       server.log.error(err.message)
@@ -28,20 +22,8 @@ module.exports = async (server, opts) => {
   })
 
   server.post('/', { schema: createUserSchema }, async (req, res) => {
-    const { username, name, avatar, email, birthday, linkedAccounts } = req.body
     try {
-      const { insertedId } = await userCollection.insertOne({
-        username,
-        name,
-        avatar,
-        email,
-        birthday,
-        linkedAccounts: {
-          ...linkedAccounts,
-          messenger: 'AUTH_' + (await nanoid(16))
-        },
-        privilege: 'normal',
-      })
+      const { insertedId } = await rootService.createUser(req.body)
       res.status(200).send({ _id: insertedId })
     } catch (err) {
       server.log.error(err.message)
@@ -50,9 +32,9 @@ module.exports = async (server, opts) => {
   })
 
   server.get('/:id', { schema: getUserByIDSchema }, async (req, res) => {
-    const _id = new ObjectID(req.params.id)
     try {
-      let result = await userCollection.findOne({ _id })
+      const { id } = req.params
+      let result = await rootService.getUserByID(id)
       res.status(200).send(result)
     } catch (err) {
       server.log.error(err.message)
@@ -64,11 +46,9 @@ module.exports = async (server, opts) => {
     '/linkedAccounts/:service/:id',
     { schema: getUserByLinkedAccountIDSchema },
     async (req, res) => {
-      const { service, id } = req.params
       try {
-        const user = await userCollection.findOne({
-          ['linkedAccounts.' + service]: id
-        })
+        const { service, id } = req.params
+        const user = await rootService.getUserByLinkedAccountID(service, id)
         res.status(200).send(user)
       } catch (err) {
         server.log.error(err.message)
@@ -81,18 +61,9 @@ module.exports = async (server, opts) => {
     '/linkedAccounts/:service/:id/:newID',
     { schema: updateLinkedAccountIDSchema },
     async (req, res) => {
-      const { service, id, newID } = req.params
       try {
-        await userCollection.updateOne(
-          {
-            ['linkedAccounts.' + service]: id
-          },
-          {
-            $set: {
-              ['linkedAccounts.' + service]: newID
-            }
-          }
-        )
+        const { service, id, newID } = req.params
+        await rootService.updateLinkedAccountID(service, id, newID)
         res.status(204)
       } catch (err) {
         server.log.error(err.message)

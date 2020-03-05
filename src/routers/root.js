@@ -22,9 +22,8 @@ module.exports = async (server, opts) => {
   })
 
   server.post('/', { schema: createUserSchema }, async (req, res) => {
-    const data = req.body
     try {
-      const { insertedId } = await rootService.createUser(data)
+      const { insertedId } = await rootService.createUser(req.body)
       res.status(200).send({ _id: insertedId })
     } catch (err) {
       server.log.error(err.message)
@@ -33,8 +32,8 @@ module.exports = async (server, opts) => {
   })
 
   server.get('/:id', { schema: getUserByIDSchema }, async (req, res) => {
-    const { id } = req.params
     try {
+      const { id } = req.params
       let result = await rootService.getUserByID(id)
       res.status(200).send(result)
     } catch (err) {
@@ -47,8 +46,8 @@ module.exports = async (server, opts) => {
     '/linkedAccounts/:service/:id',
     { schema: getUserByLinkedAccountIDSchema },
     async (req, res) => {
-      const { service, id } = req.params
       try {
+        const { service, id } = req.params
         const user = await rootService.getUserByLinkedAccountID(service, id)
         res.status(200).send(user)
       } catch (err) {
@@ -62,8 +61,8 @@ module.exports = async (server, opts) => {
     '/linkedAccounts/:service/:id/:newID',
     { schema: updateLinkedAccountIDSchema },
     async (req, res) => {
-      const { service, id, newID } = req.params
       try {
+        const { service, id, newID } = req.params
         await rootService.updateLinkedAccountID(service, id, newID)
         res.status(204)
       } catch (err) {

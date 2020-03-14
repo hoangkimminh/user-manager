@@ -2,7 +2,7 @@ const {
   userSchema,
   _idSchema,
   usernameSchema,
-  nameSchema,
+  profileSchema,
   avatarSchema,
   emailSchema,
   birthdaySchema,
@@ -21,10 +21,10 @@ const getAllUsersSchema = {
 const createUserSchema = {
   body: {
     type: 'object',
-    required: ['name', 'avatar', 'email', 'linkedAccounts'],
+    required: ['profile', 'avatar', 'email', 'linkedAccounts'],
     properties: {
       username: usernameSchema,
-      name: nameSchema,
+      profile: profileSchema,
       avatar: avatarSchema,
       email: emailSchema,
       birthday: birthdaySchema,

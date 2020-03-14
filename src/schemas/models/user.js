@@ -15,12 +15,27 @@ const usernameSchema = {
   description: 'username'
 }
 
-const nameSchema = {
+const firstnameSchema = {
   bsonType: 'string',
   type: 'string',
   minLength: 6,
   maxLength: 48,
-  description: "User's full name"
+  description: "User's first name"
+}
+
+const lastnameSchema = {
+  bsonType: 'string',
+  type: 'string',
+  minLength: 6,
+  maxLength: 48,
+  description: "User's last name"
+}
+
+const genderSchema = {
+  bsonType: 'string',
+  type: 'string',
+  enum: ['male', 'female', 'other', 'rather not say'],
+  description: "User's gender"
 }
 
 const avatarSchema = {
@@ -44,6 +59,19 @@ const birthdaySchema = {
   type: ['string', 'null'],
   format: 'date',
   description: "User's birthday"
+}
+
+const profileSchema = {
+  bsonType: 'object',
+  type: 'object',
+  required: ['firstname', 'lastname'],
+  properties: {
+    firstname: firstnameSchema,
+    lastname: lastnameSchema,
+    birthday: birthdaySchema,
+    gender: genderSchema
+  },
+  description: "User's profile"
 }
 
 const linkedAccountsSchema = {
@@ -91,22 +119,14 @@ const updatedAtSchema = {
 
 const userSchema = {
   bsonType: 'object',
-  required: [
-    '_id',
-    'name',
-    'avatar',
-    'email',
-    'linkedAccounts',
-    'privilege',
-    'createdAt'
-  ],
+  required: ['_id', 'email', 'linkedAccounts', 'privilege', 'createdAt'],
   properties: {
     _id: _idSchema,
     username: usernameSchema,
-    name: nameSchema,
+    profile: profileSchema,
+    birthday: birthdaySchema,
     avatar: avatarSchema,
     email: emailSchema,
-    birthday: birthdaySchema,
     linkedAccounts: linkedAccountsSchema,
     privilege: privilegeSchema,
     createdAt: createdAtSchema,
@@ -118,7 +138,7 @@ module.exports = {
   userSchema,
   _idSchema,
   usernameSchema,
-  nameSchema,
+  profileSchema,
   avatarSchema,
   emailSchema,
   birthdaySchema,

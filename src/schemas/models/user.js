@@ -15,36 +15,6 @@ const usernameSchema = {
   description: 'username'
 }
 
-const firstnameSchema = {
-  bsonType: 'string',
-  type: 'string',
-  minLength: 6,
-  maxLength: 48,
-  description: "User's first name"
-}
-
-const lastnameSchema = {
-  bsonType: 'string',
-  type: 'string',
-  minLength: 6,
-  maxLength: 48,
-  description: "User's last name"
-}
-
-const genderSchema = {
-  bsonType: 'string',
-  type: 'string',
-  enum: ['male', 'female', 'other', 'rather not say'],
-  description: "User's gender"
-}
-
-const avatarSchema = {
-  bsonType: 'string',
-  type: 'string',
-  format: 'uri',
-  description: "User's avatar URL"
-}
-
 const emailSchema = {
   bsonType: 'string',
   type: 'string',
@@ -54,22 +24,44 @@ const emailSchema = {
   description: "User's email"
 }
 
-const birthdaySchema = {
-  bsonType: ['date', 'null'],
-  type: ['string', 'null'],
-  format: 'date',
-  description: "User's birthday"
-}
-
 const profileSchema = {
   bsonType: 'object',
   type: 'object',
-  required: ['firstname', 'lastname'],
+  required: ['firstName', 'lastName', 'avatar'],
   properties: {
-    firstname: firstnameSchema,
-    lastname: lastnameSchema,
-    birthday: birthdaySchema,
-    gender: genderSchema
+    firstName: {
+      bsonType: 'string',
+      type: 'string',
+      minLength: 6,
+      maxLength: 24,
+      description: "User's first name"
+    },
+    lastName: {
+      bsonType: 'string',
+      type: 'string',
+      minLength: 6,
+      maxLength: 24,
+      description: "User's last name"
+    },
+    avatar: {
+      bsonType: 'string',
+      type: 'string',
+      format: 'uri',
+      description: "User's avatar URL"
+    },
+    birthday: {
+      bsonType: ['date', 'null'],
+      type: ['string', 'null'],
+      format: 'date',
+      description: "User's birthday"
+    },
+    gender: {
+      bsonType: 'string',
+      type: 'string',
+      enum: ['male', 'female', 'other', 'rather not say'],
+      description: "User's gender",
+      default: 'rather not say'
+    }
   },
   description: "User's profile"
 }
@@ -119,13 +111,11 @@ const updatedAtSchema = {
 
 const userSchema = {
   bsonType: 'object',
-  required: ['_id', 'email', 'linkedAccounts', 'privilege', 'createdAt'],
+  required: ['_id', 'email', 'profile', 'linkedAccounts', 'privilege', 'createdAt'],
   properties: {
     _id: _idSchema,
     username: usernameSchema,
     profile: profileSchema,
-    birthday: birthdaySchema,
-    avatar: avatarSchema,
     email: emailSchema,
     linkedAccounts: linkedAccountsSchema,
     privilege: privilegeSchema,
@@ -139,8 +129,6 @@ module.exports = {
   _idSchema,
   usernameSchema,
   profileSchema,
-  avatarSchema,
   emailSchema,
-  birthdaySchema,
   linkedAccountsSchema
 }
